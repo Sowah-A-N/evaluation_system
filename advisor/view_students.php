@@ -16,9 +16,18 @@
 
 <?php
 
-       $fetchStudentStmt = $conn -> prepare("SELECT unique_id, class 
-                                                    FROM user_details
-                                                    WHERE level_id = :advisor_level;");
+       $fetchStudentStmt = $conn -> prepare("SELECT 
+                                                ud.unique_id, 
+                                                ud.class, 
+                                                COUNT(e.student_id) AS evaluation_count
+                                            FROM 
+                                                user_details ud
+                                            LEFT JOIN 
+                                                evaluations e ON ud.unique_id = e.student_id
+                                            WHERE 
+                                                ud.level_id = :advisor_level
+                                            GROUP BY 
+                                                ud.unique_id, ud.class;");
 
 
        $advisorYear = $_SESSION['level_id'];
@@ -54,8 +63,8 @@
                                         <tr>
                                             <td class="cell"><?php echo $row['class']?></td>
                                             <td class="cell"><?php echo $row['unique_id']?></td>
-                                            <td class="cell"><span>17 Oct</span><span class="note">2:16 PM</span></td>
-                                            <td class="cell"><span class="badge bg-success">Paid</span></td>
+                                            <td class="cell"><?php echo $row['evaluation_count']?></td>
+                                            <td class="cell"><?php echo $emptyPlaceholder ?></td>
                                         </tr>
                                     <?php } ?>
                                 <?php endif; ?>

@@ -195,6 +195,33 @@ $conn->close();
     }
 
 </style>
+<style>
+.rating-container {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.rating-stars {
+    display: inline-block;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.star {
+    color: #ccc;
+    transition: color 0.2s ease;
+}
+
+.star.active {
+    color: #ffd700;
+}
+
+.rating-value {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 18px;
+}
+</style>
 
 </head>
 <body>
@@ -256,46 +283,46 @@ document.addEventListener("DOMContentLoaded", () => {
             questionText.textContent = `${questionCounter}. ${question.question_text}`;
             questionDiv.appendChild(questionText);
 
-            // Create a container for the slider and ticks
-            const sliderContainer = document.createElement("div");
-            sliderContainer.classList.add("slider-container");
+            // Create a container for the star ratings
+            const ratingContainer = document.createElement("div");
+            ratingContainer.classList.add("rating-container");
 
-            // Create the rating slider
-            const ratingSlider = document.createElement("input");
-            ratingSlider.type = "range";
-            ratingSlider.name = `answer_${question.question_id}`;
-            ratingSlider.min = "1";
-            ratingSlider.max = "5";
-            ratingSlider.step = "1";
-            ratingSlider.value = "3"; // Default value
-            ratingSlider.classList.add("rating-slider");
-
-            // Display the current rating value
-            const ratingValue = document.createElement("span");
-            ratingValue.classList.add("rating-value");
-            ratingValue.textContent = ratingSlider.value;
-
-            // Update rating value on slider change
-            ratingSlider.addEventListener("input", () => {
-                ratingValue.textContent = ratingSlider.value;
-            });
-
-            // Add tick marks below the slider
-            const tickContainer = document.createElement("div");
-            tickContainer.classList.add("tick-container");
+            // Create the star ratings
+            const ratingStars = document.createElement("div");
+            ratingStars.classList.add("rating-stars");
 
             for (let i = 1; i <= 5; i++) {
-                const tick = document.createElement("span");
-                tick.classList.add("tick");
-                tick.textContent = i; // Number label for the tick
-                tickContainer.appendChild(tick);
+                const star = document.createElement("span");
+                star.classList.add("star");
+                star.textContent = "\u2605"; // Unicode character for a star
+                ratingStars.appendChild(star);
             }
 
-            sliderContainer.appendChild(ratingSlider);
-            sliderContainer.appendChild(tickContainer);
+            ratingContainer.appendChild(ratingStars);
 
-            questionDiv.appendChild(sliderContainer);
-            questionDiv.appendChild(ratingValue);
+            // Add event listeners to handle mouse clicks and hover effects
+            ratingStars.addEventListener("click", (e) => {
+                if (e.target.classList.contains("star")) {
+                    const rating = Array.prototype.indexOf.call(ratingStars.children, e.target) + 1;
+                    updateRating(ratingStars, rating);
+                }
+            });
+
+            // ratingStars.addEventListener("mouseover", (e) => {
+            //     if (e.target.classList.contains("star")) {
+            //         const rating = Array.prototype.indexOf.call(ratingStars.children, e.target) + 1;
+            //         updateRating(ratingStars, rating, true);
+            //     }
+            // });
+
+            // ratingStars.addEventListener("click", () => {
+            //     updateRating(ratingStars, rating, true);
+            // });
+
+            // Initialize the rating to 3
+            updateRating(ratingStars, 3);
+
+            questionDiv.appendChild(ratingContainer);
 
             container.appendChild(questionDiv);
 
@@ -305,6 +332,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Helper function to update the rating
+function updateRating(ratingStars, rating, isHover = false) {
+    const stars = ratingStars.children;
+
+    for (let i = 0; i < stars.length; i++) {
+        if (i < rating) {
+            stars[i].classList.add("active");
+        } else {
+            stars[i].classList.remove("active");
+        }
+    }
+
+    if (!isHover) {
+        // Update the rating value
+        const ratingValue = ratingStars.parentNode.querySelector(".rating-value");
+        if (ratingValue) {
+            ratingValue.textContent = rating;
+        }
+    }
+}
 // Handle submit button click
 document.getElementById("submit-btn").addEventListener("click", () => {
     const responses = questions.map(question => {
