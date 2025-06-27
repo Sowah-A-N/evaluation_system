@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Prepare and execute the query
-    $query = "SELECT roles.role_name, user_details.password, user_details.department, user_details.unique_id
+    $query = "SELECT roles.role_name, user_details.user_details, user_details.password, user_details.department, user_details.unique_id
               FROM user_details
               JOIN roles ON user_details.role_id = roles.role_id
               WHERE (user_details.email = ? OR user_details.unique_id = ?)
@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $department = $user['department'];
         $unique_id = $user['unique_id'];
         // Store role, username, and department in the session
+        $_SESSION['user_id'] = $user['user_details'];
         $_SESSION['username'] = $username;
         $_SESSION['role_name'] = $role;
         $_SESSION['department'] = $department;
